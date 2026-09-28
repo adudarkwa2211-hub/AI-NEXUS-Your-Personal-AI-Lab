@@ -1,0 +1,15 @@
+RAG Chatbot Module
+
+This campus assistant uses retrieval-augmented generation.
+User questions are converted to vectors with multilingual MiniLM
+(sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2).
+FAISS then finds the most similar document chunks.
+Qwen2.5 reads those chunks and writes the answer.
+
+The HTTP API is FastAPI. The chat screen is a React application.
+The pipeline is: question → MiniLM embedding → FAISS search → context → Qwen2.5 → JSON response.
+
+Answers must stay grounded in retrieved campus documents.
+If no relevant chunk is found, the assistant should say it does not know.
+
+Module RAG chatbot của trường dùng MiniLM đa ngữ, FAISS và Qwen2.5.
