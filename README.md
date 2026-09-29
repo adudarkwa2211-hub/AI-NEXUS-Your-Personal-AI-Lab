@@ -82,6 +82,20 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 - `GET /api/health`
 - `POST /api/chat` body: `{ "message": "When is the library open?", "history": [] }`
+- `POST /api/detect` multipart form: image field `file`, optional `confidence` from 0.01 to 1.0. Uses YOLO11n pretrained on COCO; first detection request downloads `yolo11n.pt`.
+
+### Object detection and evaluation
+
+Open the **Object detection** tab in the React app, choose an image (up to 8 MB), and set the confidence threshold. The result includes an annotated image, detected COCO labels, confidence scores, and bounding boxes. Model weights are loaded once on the first request and cached for the process.
+
+Evaluate the pretrained model on COCO128 and report both mAP metrics:
+
+```powershell
+cd backend
+python scripts\evaluate_detector.py
+```
+
+Ultralytics downloads COCO128 when needed. Results are printed and saved as `backend/data/metrics/detector_metrics.json`.
 
 ## Frontend setup
 
@@ -96,6 +110,9 @@ Open http://127.0.0.1:5173 . Vite proxies `/api` to FastAPI on port 8000.
 ## Project layout
 
 - `backend/app/rag/` — MiniLM embedder, FAISS store, retriever, RAG prompt, Qwen2.5, pipeline
+- `backend/app/detector/` — YOLO11n inference wrapper
+- `backend/app/api/detect.py` — image upload and detection endpoint
+- `backend/scripts/evaluate_detector.py` — COCO128 mAP50 / mAP50-95 evaluation
 - `backend/scripts/ingest.py` — build the index
 - `backend/scripts/load_index.py` — load the index
 - `backend/data/documents/` — knowledge base
@@ -103,4 +120,4 @@ Open http://127.0.0.1:5173 . Vite proxies `/api` to FastAPI on port 8000.
 
 ## Other AI modules
 
-This repo currently contains only the RAG chatbot. Additional FastAPI routers can be mounted next to `/api/chat` in `backend/app/main.py` without changing the RAG pipeline.
+The repo contains a RAG chatbot and a YOLO11n object detector. Additional FastAPI routers can be mounted next to `/api/chat` and `/api/detect` in `backend/app/main.py` without changing either pipeline.

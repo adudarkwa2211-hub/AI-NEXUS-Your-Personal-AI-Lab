@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import MessageInput from "./components/MessageInput.jsx";
 import MessageList from "./components/MessageList.jsx";
 import { fetchHealth, sendChat } from "./api/chat.js";
+import ObjectDetection from "./components/ObjectDetection.jsx";
 
 let nextId = 1;
 
@@ -17,6 +18,7 @@ export default function App() {
   ]);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("Checking API...");
+  const [page, setPage] = useState("chat");
 
   useEffect(() => {
     fetchHealth()
@@ -69,9 +71,17 @@ export default function App() {
       <header>
         <h1>Greenfield RAG Chatbot</h1>
         <p className="status">{status}</p>
+        <nav className="feature-nav" aria-label="AI features">
+          <button className={page === "chat" ? "active" : ""} onClick={() => setPage("chat")}>Campus assistant</button>
+          <button className={page === "detect" ? "active" : ""} onClick={() => setPage("detect")}>Object detection</button>
+        </nav>
       </header>
-      <MessageList messages={messages} />
-      <MessageInput onSend={handleSend} disabled={busy} />
+      {page === "chat" ? (
+        <>
+          <MessageList messages={messages} />
+          <MessageInput onSend={handleSend} disabled={busy} />
+        </>
+      ) : <ObjectDetection />}
     </div>
   );
 }

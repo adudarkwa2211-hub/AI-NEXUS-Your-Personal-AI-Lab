@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     chunk_size: int = Field(default=700, ge=100)
     chunk_overlap: int = Field(default=100, ge=0)
     score_threshold: float = Field(default=0.15, ge=0.0, le=1.0)
+    detector_model: str = "yolo11n.pt"
+    detector_confidence: float = Field(default=0.25, ge=0.01, le=1.0)
+    max_upload_mb: int = Field(default=8, ge=1, le=50)
     host: str = "127.0.0.1"
     port: int = 8000
     log_level: str = "INFO"

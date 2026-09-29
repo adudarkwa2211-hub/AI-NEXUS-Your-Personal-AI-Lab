@@ -105,3 +105,25 @@ h1 {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.feature-nav { display: flex; gap: 8px; margin-top: 14px; }
+.feature-nav button { border: 1px solid #c5d0dc; background: white; color: #34495e; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+.feature-nav button.active { background: #1f6feb; border-color: #1f6feb; color: white; }
+.detector { padding: 24px; display: grid; grid-template-columns: minmax(220px, 0.75fr) minmax(0, 1.25fr); gap: 24px; }
+.detector h2 { margin: 0 0 8px; }
+.detector h3 { margin: 16px 0 10px; }
+.detector-controls form { display: grid; gap: 16px; margin-top: 22px; }
+.upload-label { display: grid; gap: 8px; font-weight: 600; }
+.upload-label input { max-width: 100%; font-weight: 400; }
+.file-name { margin: -8px 0 0; overflow-wrap: anywhere; color: #4d6278; font-size: .85rem; }
+.confidence-control { display: grid; gap: 8px; }
+.confidence-control input { width: 100%; }
+.detect-button { border: 0; border-radius: 9px; padding: 12px 16px; color: white; background: #1f6feb; font-weight: 600; cursor: pointer; }
+.detect-button:disabled { opacity: .55; cursor: wait; }
+.small { margin-top: 18px; font-size: .82rem; }
+.detected-image { display: block; max-width: 100%; max-height: 520px; object-fit: contain; border-radius: 10px; background: #f1f5f9; }
+.detection-table-wrap { overflow-x: auto; }
+.detection-table { border-collapse: collapse; width: 100%; font-size: .88rem; text-align: left; }
+.detection-table th, .detection-table td { padding: 9px 8px; border-bottom: 1px solid #d9e2ec; }
+.error-message { color: #b42318; }
+@media (max-width: 640px) { .detector { grid-template-columns: 1fr; padding: 18px; } }

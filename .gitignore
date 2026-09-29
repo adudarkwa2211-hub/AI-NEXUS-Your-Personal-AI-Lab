@@ -17,5 +17,7 @@ frontend/dist/
 .idea/
 .vscode/
 *.egg-info/
+*.pt
+runs/
 .huggingface/
 hf_cache/
