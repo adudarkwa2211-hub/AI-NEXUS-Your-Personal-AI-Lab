@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     score_threshold: float = Field(default=0.15, ge=0.0, le=1.0)
     detector_model: str = "yolo11n.pt"
     detector_confidence: float = Field(default=0.25, ge=0.01, le=1.0)
+    classifier_model_dir: Path = Path("backend/data/models/classifier")
+    classifier_min_confidence: float = Field(default=0.5, ge=0.0, le=1.0)
     max_upload_mb: int = Field(default=8, ge=1, le=50)
     host: str = "127.0.0.1"
     port: int = 8000
@@ -47,6 +49,11 @@ class Settings(BaseSettings):
     @property
     def metadata_file(self) -> Path:
         return self.index_path / "metadata.json"
+
+    @property
+    def classifier_model_path(self) -> Path:
+        path = self.classifier_model_dir
+        return path if path.is_absolute() else PROJECT_ROOT / path
 
 
 @lru_cache

@@ -10,6 +10,8 @@ __pycache__/
 backend/data/indexes/*.faiss
 backend/data/indexes/*.json
 !backend/data/indexes/.gitkeep
+backend/data/datasets/flower_photos/
+backend/data/datasets/flower_photos.tgz
 
 frontend/node_modules/
 frontend/dist/
@@ -18,6 +20,7 @@ frontend/dist/
 .vscode/
 *.egg-info/
 *.pt
+backend/data/models/classifier/split.json
 runs/
 .huggingface/
 hf_cache/

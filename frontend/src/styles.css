@@ -106,7 +106,7 @@ h1 {
   cursor: not-allowed;
 }
 
-.feature-nav { display: flex; gap: 8px; margin-top: 14px; }
+.feature-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .feature-nav button { border: 1px solid #c5d0dc; background: white; color: #34495e; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
 .feature-nav button.active { background: #1f6feb; border-color: #1f6feb; color: white; }
 .detector { padding: 24px; display: grid; grid-template-columns: minmax(220px, 0.75fr) minmax(0, 1.25fr); gap: 24px; }
@@ -126,4 +126,17 @@ h1 {
 .detection-table { border-collapse: collapse; width: 100%; font-size: .88rem; text-align: left; }
 .detection-table th, .detection-table td { padding: 9px 8px; border-bottom: 1px solid #d9e2ec; }
 .error-message { color: #b42318; }
+.flower-classifier { padding: 24px; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 24px; }
+.flower-classifier > * { min-width: 0; }
+.flower-classifier h2 { margin: 0 0 8px; }
+.flower-classifier h3 { margin: 16px 0 10px; text-transform: capitalize; }
+.flower-controls form { display: grid; gap: 14px; margin-top: 22px; }
+.flower-upload { min-height: 130px; display: grid; align-content: center; justify-items: center; gap: 8px; padding: 20px; border: 1px dashed #8da2b7; border-radius: 10px; text-align: center; cursor: pointer; }
+.flower-upload input { width: 100%; min-width: 0; max-width: 100%; }
+.flower-preview { display: block; max-width: 100%; max-height: 360px; object-fit: contain; margin-bottom: 16px; border-radius: 10px; background: #f1f5f9; }
+.flower-warning { padding: 10px 12px; border-left: 3px solid #b7791f; background: #fff8e6; color: #704b0d; }
+.flower-score { display: grid; grid-template-columns: minmax(76px, 100px) minmax(80px, 1fr) 52px; align-items: center; gap: 10px; margin: 10px 0; text-transform: capitalize; font-size: .9rem; }
+.flower-track { height: 12px; overflow: hidden; border-radius: 6px; background: #e6edf3; }
+.flower-fill { height: 100%; background: #2f7d68; }
 @media (max-width: 640px) { .detector { grid-template-columns: 1fr; padding: 18px; } }
+@media (max-width: 640px) { .flower-classifier { grid-template-columns: 1fr; padding: 18px; } }

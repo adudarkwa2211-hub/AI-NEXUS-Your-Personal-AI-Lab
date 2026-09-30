@@ -3,6 +3,7 @@ import MessageInput from "./components/MessageInput.jsx";
 import MessageList from "./components/MessageList.jsx";
 import { fetchHealth, sendChat } from "./api/chat.js";
 import ObjectDetection from "./components/ObjectDetection.jsx";
+import FlowerClassifier from "./components/FlowerClassifier.jsx";
 
 let nextId = 1;
 
@@ -74,6 +75,7 @@ export default function App() {
         <nav className="feature-nav" aria-label="AI features">
           <button className={page === "chat" ? "active" : ""} onClick={() => setPage("chat")}>Campus assistant</button>
           <button className={page === "detect" ? "active" : ""} onClick={() => setPage("detect")}>Object detection</button>
+          <button className={page === "flowers" ? "active" : ""} onClick={() => setPage("flowers")}>Flower classifier</button>
         </nav>
       </header>
       {page === "chat" ? (
@@ -81,7 +83,7 @@ export default function App() {
           <MessageList messages={messages} />
           <MessageInput onSend={handleSend} disabled={busy} />
         </>
-      ) : <ObjectDetection />}
+      ) : page === "detect" ? <ObjectDetection /> : <FlowerClassifier />}
     </div>
   );
 }

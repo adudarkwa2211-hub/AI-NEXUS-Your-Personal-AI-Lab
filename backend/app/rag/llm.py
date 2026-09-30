@@ -29,12 +29,18 @@ class QwenGenerator:
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},
         ]
-        input_ids = self.tokenizer.apply_chat_template(
+        model_inputs = self.tokenizer.apply_chat_template(
             messages,
             add_generation_prompt=True,
             return_tensors="pt",
-        ).to(self.device)
-        attention_mask = torch.ones_like(input_ids)
+            return_dict=True,
+        )
+        input_ids = model_inputs["input_ids"].to(self.device)
+        attention_mask = model_inputs.get("attention_mask")
+        if attention_mask is None:
+            attention_mask = torch.ones_like(input_ids)
+        else:
+            attention_mask = attention_mask.to(self.device)
         with torch.no_grad():
             output_ids = self.model.generate(
                 input_ids,

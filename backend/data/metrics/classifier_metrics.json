@@ -1,0 +1,88 @@
+{
+  "accuracy": 0.7849462628364563,
+  "macro_f1": 0.7841792702674866,
+  "per_class": [
+    {
+      "precision": 0.8095238208770752,
+      "recall": 0.796875,
+      "f1": 0.8031495809555054,
+      "support": 64
+    },
+    {
+      "precision": 0.9012345671653748,
+      "recall": 0.8021978139877319,
+      "f1": 0.8488372564315796,
+      "support": 91
+    },
+    {
+      "precision": 0.6117647290229797,
+      "recall": 0.800000011920929,
+      "f1": 0.6933333873748779,
+      "support": 65
+    },
+    {
+      "precision": 0.8260869383811951,
+      "recall": 0.8028169274330139,
+      "f1": 0.8142856955528259,
+      "support": 71
+    },
+    {
+      "precision": 0.7972972989082336,
+      "recall": 0.7283950448036194,
+      "f1": 0.7612903714179993,
+      "support": 81
+    }
+  ],
+  "confusion_matrix": [
+    [
+      51,
+      3,
+      4,
+      3,
+      3
+    ],
+    [
+      2,
+      73,
+      8,
+      5,
+      3
+    ],
+    [
+      3,
+      1,
+      52,
+      2,
+      7
+    ],
+    [
+      3,
+      3,
+      6,
+      57,
+      2
+    ],
+    [
+      4,
+      1,
+      15,
+      2,
+      59
+    ]
+  ],
+  "sample_count": 372,
+  "model": "resnet18-imagenet1k-v1",
+  "dataset": "TF Flowers",
+  "classes": [
+    "daisy",
+    "dandelion",
+    "roses",
+    "sunflowers",
+    "tulips"
+  ],
+  "seed": 42,
+  "epochs": 1,
+  "best_validation_accuracy": 0.7719780206680298,
+  "train_sample_count": 800,
+  "validation_sample_count": 364
+}

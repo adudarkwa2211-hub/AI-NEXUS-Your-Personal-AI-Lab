@@ -41,11 +41,11 @@ cd backend
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 python -m pip install -r requirements.txt
 ```
 
-On CUDA, install the GPU build of `torch` instead of the CPU index URL.
+On CUDA, install a matching GPU build of `torch` and `torchvision` instead of the CPU index URL.
 
 ### Build the FAISS index
 
@@ -83,6 +83,7 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 - `GET /api/health`
 - `POST /api/chat` body: `{ "message": "When is the library open?", "history": [] }`
 - `POST /api/detect` multipart form: image field `file`, optional `confidence` from 0.01 to 1.0. Uses YOLO11n pretrained on COCO; first detection request downloads `yolo11n.pt`.
+- `POST /api/classify` multipart form: image field `file`, optional `top_k` from 1 to 5. Requires the trained flower classifier artifacts.
 
 ### Object detection and evaluation
 
@@ -107,10 +108,30 @@ npm run dev
 
 Open http://127.0.0.1:5173 . Vite proxies `/api` to FastAPI on port 8000.
 
+### Flower species classification
+
+Train the ResNet-18 classifier using TF Flowers (five classes). The first run downloads the dataset and ImageNet pretrained weights. A quick CPU run uses one epoch and up to 160 training images per class:
+
+```powershell
+cd backend
+python scripts\train_flower_classifier.py --epochs 1 --max-train-per-class 160 --batch-size 16
+```
+
+For a fuller run, use the complete training split and more epochs (a CUDA GPU is recommended):
+
+```powershell
+python scripts\train_flower_classifier.py --epochs 5 --batch-size 32
+```
+
+The script creates `backend/data/models/classifier/model.pt`, `classes.json`, and `split.json`; final test accuracy, macro-F1, per-class scores, and confusion matrix are written to `backend/data/metrics/classifier_metrics.json`. The classifier loads lazily on the first `/api/classify` request. Its `confident` result is a softmax-threshold warning, not a guarantee that an image belongs to one of the five flower classes.
+
 ## Project layout
 
 - `backend/app/rag/` — MiniLM embedder, FAISS store, retriever, RAG prompt, Qwen2.5, pipeline
 - `backend/app/detector/` — YOLO11n inference wrapper
+- `backend/app/classifier/` — ResNet-18 flower classifier and deterministic split helper
+- `backend/app/api/classify.py` — flower image upload and classification endpoint
+- `backend/scripts/train_flower_classifier.py` — TF Flowers training and evaluation
 - `backend/app/api/detect.py` — image upload and detection endpoint
 - `backend/scripts/evaluate_detector.py` — COCO128 mAP50 / mAP50-95 evaluation
 - `backend/scripts/ingest.py` — build the index
@@ -120,4 +141,4 @@ Open http://127.0.0.1:5173 . Vite proxies `/api` to FastAPI on port 8000.
 
 ## Other AI modules
 
-The repo contains a RAG chatbot and a YOLO11n object detector. Additional FastAPI routers can be mounted next to `/api/chat` and `/api/detect` in `backend/app/main.py` without changing either pipeline.
+The repo contains a RAG chatbot, a YOLO11n object detector, and a ResNet-18 flower classifier. Additional FastAPI routers can be mounted next to `/api/chat`, `/api/detect`, and `/api/classify` in `backend/app/main.py` without changing those pipelines.
