@@ -9,7 +9,8 @@ AI NEXUS is an integrated AI web platform featuring flower classification, objec
 
 
 ### 2. Object Detection (YOLO11n)
-<img width="860" height="603" alt="1790841775704_213519633804142373_g2806603422445831712_ec6dea5511d5da0031dbd2468a9a3906" src="https://github.com/user-attachments/assets/81e74a1f-2ee5-4edc-a2c0-b8b66f95e41a" />
+<img width="811" height="583" alt="0f9f385e-657a-4d6e-ad84-51253085f65c" src="https://github.com/user-attachments/assets/389d944e-9c42-46b0-852f-cf55b6409d1f" />
+
 
 
 ### 3. Flower Species Classifier (ResNet-18)
