@@ -32,6 +32,11 @@ class Settings(BaseSettings):
     port: int = 8000
     log_level: str = "INFO"
 
+    # --- Config bổ sung cho Image Retrieval (CLIP + FAISS) ---
+    clip_model: str = "openai/clip-vit-base-patch32"
+    retrieval_images_dir: Path = Path("backend/data/retrieval/images")
+    retrieval_index_dir: Path = Path("backend/data/retrieval/index")
+
     @property
     def documents_path(self) -> Path:
         path = self.documents_dir
@@ -53,6 +58,16 @@ class Settings(BaseSettings):
     @property
     def classifier_model_path(self) -> Path:
         path = self.classifier_model_dir
+        return path if path.is_absolute() else PROJECT_ROOT / path
+
+    @property
+    def retrieval_images_path(self) -> Path:
+        path = self.retrieval_images_dir
+        return path if path.is_absolute() else PROJECT_ROOT / path
+
+    @property
+    def retrieval_index_path(self) -> Path:
+        path = self.retrieval_index_dir
         return path if path.is_absolute() else PROJECT_ROOT / path
 
 
