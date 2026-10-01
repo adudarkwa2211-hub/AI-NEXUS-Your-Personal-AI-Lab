@@ -1,144 +1,20 @@
-# RAG Chatbot
+# AI NEXUS - Integrated AI Web Platform
 
-Campus assistant module: **multilingual MiniLM → FAISS → Qwen2.5**, served by **FastAPI** and a **React** chat UI.
+AI NEXUS is an integrated AI web platform featuring flower classification, object detection, image retrieval, and a RAG chatbot. Built with React, Python, FastAPI, ResNet-18, YOLO11n, CLIP, FAISS, MiniLM, and Qwen2.5.
 
-```
-User question
-  → multilingual MiniLM embedding
-  → FAISS similarity search
-  → retrieve relevant context
-  → Qwen2.5
-  → FastAPI JSON
-  → React chat UI
-```
+## 📸 Demo Interfaces
 
-## Requirements
+### 1. RAG Campus Assistant Chatbot
+<img width="939" height="596" alt="1790841768452_213519633804142373_g2806603422445831712_5ffccc0a0aeaa0c2c1aec8cdd73043dc" src="https://github.com/user-attachments/assets/ac070d05-5292-4169-85c5-7d85e0270c52" />
 
-- Python **3.11 or 3.12** (3.14 is not recommended: PyTorch/FAISS wheels are often missing)
-- Node.js 18+
-- Several GB of disk for Hugging Face model files (`paraphrase-multilingual-MiniLM-L12-v2` and `Qwen/Qwen2.5-0.5B-Instruct`)
 
-## Configuration
+### 2. Object Detection (YOLO11n)
+<img width="860" height="603" alt="1790841775704_213519633804142373_g2806603422445831712_ec6dea5511d5da0031dbd2468a9a3906" src="https://github.com/user-attachments/assets/81e74a1f-2ee5-4edc-a2c0-b8b66f95e41a" />
 
-Copy `.env.example` to `.env`. Paths and model names are read from that file, not hardcoded in request handlers.
 
-| Variable | Meaning |
-|---|---|
-| `EMBEDDING_MODEL` | Must be multilingual MiniLM (`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`) |
-| `LLM_MODEL` | Qwen2.5 Instruct checkpoint (default `Qwen/Qwen2.5-0.5B-Instruct` for CPU) |
-| `DOCUMENTS_DIR` | Knowledge-base folder (`.txt` / `.md`) |
-| `INDEX_DIR` | Where `index.faiss` and `metadata.json` are stored |
-| `TOP_K` | How many FAISS neighbours to retrieve |
+### 3. Flower Species Classifier (ResNet-18)
+<img width="784" height="574" alt="1790841783151_213519633804142373_g2806603422445831712_b98c719541bac5dd6058f75505259086" src="https://github.com/user-attachments/assets/5e004077-7202-49be-83dc-6eb18c22bc49" />
 
-To use a larger Qwen2.5 model on a GPU machine, set `LLM_MODEL=Qwen/Qwen2.5-1.5B-Instruct` (or `3B` / `7B-Instruct`) in `.env`. Do not switch to a different model family.
 
-## Backend setup
-
-From the repository root:
-
-```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-python -m pip install -r requirements.txt
-```
-
-On CUDA, install a matching GPU build of `torch` and `torchvision` instead of the CPU index URL.
-
-### Build the FAISS index
-
-```powershell
-cd backend
-python scripts\ingest.py
-```
-
-This loads campus documents, chunks them, embeds them with MiniLM, and writes `backend/data/indexes/index.faiss` plus `metadata.json`.
-
-### Check that the index loads
-
-```powershell
-python scripts\load_index.py
-```
-
-### Run tests
-
-```powershell
-cd backend
-python -m pytest -q
-```
-
-Retrieval tests use FAISS with a deterministic encoder so they do not download Hugging Face models. API tests use FastAPI `TestClient` and a fake pipeline for validation and error handling.
-
-### Run the API
-
-Models are loaded **once** at process start (`RAGPipeline.load`), not on every chat request.
-
-```powershell
-cd backend
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
-```
-
-- `GET /api/health`
-- `POST /api/chat` body: `{ "message": "When is the library open?", "history": [] }`
-- `POST /api/detect` multipart form: image field `file`, optional `confidence` from 0.01 to 1.0. Uses YOLO11n pretrained on COCO; first detection request downloads `yolo11n.pt`.
-- `POST /api/classify` multipart form: image field `file`, optional `top_k` from 1 to 5. Requires the trained flower classifier artifacts.
-
-### Object detection and evaluation
-
-Open the **Object detection** tab in the React app, choose an image (up to 8 MB), and set the confidence threshold. The result includes an annotated image, detected COCO labels, confidence scores, and bounding boxes. Model weights are loaded once on the first request and cached for the process.
-
-Evaluate the pretrained model on COCO128 and report both mAP metrics:
-
-```powershell
-cd backend
-python scripts\evaluate_detector.py
-```
-
-Ultralytics downloads COCO128 when needed. Results are printed and saved as `backend/data/metrics/detector_metrics.json`.
-
-## Frontend setup
-
-```powershell
-cd frontend
-npm install
-npm run dev
-```
-
-Open http://127.0.0.1:5173 . Vite proxies `/api` to FastAPI on port 8000.
-
-### Flower species classification
-
-Train the ResNet-18 classifier using TF Flowers (five classes). The first run downloads the dataset and ImageNet pretrained weights. A quick CPU run uses one epoch and up to 160 training images per class:
-
-```powershell
-cd backend
-python scripts\train_flower_classifier.py --epochs 1 --max-train-per-class 160 --batch-size 16
-```
-
-For a fuller run, use the complete training split and more epochs (a CUDA GPU is recommended):
-
-```powershell
-python scripts\train_flower_classifier.py --epochs 5 --batch-size 32
-```
-
-The script creates `backend/data/models/classifier/model.pt`, `classes.json`, and `split.json`; final test accuracy, macro-F1, per-class scores, and confusion matrix are written to `backend/data/metrics/classifier_metrics.json`. The classifier loads lazily on the first `/api/classify` request. Its `confident` result is a softmax-threshold warning, not a guarantee that an image belongs to one of the five flower classes.
-
-## Project layout
-
-- `backend/app/rag/` — MiniLM embedder, FAISS store, retriever, RAG prompt, Qwen2.5, pipeline
-- `backend/app/detector/` — YOLO11n inference wrapper
-- `backend/app/classifier/` — ResNet-18 flower classifier and deterministic split helper
-- `backend/app/api/classify.py` — flower image upload and classification endpoint
-- `backend/scripts/train_flower_classifier.py` — TF Flowers training and evaluation
-- `backend/app/api/detect.py` — image upload and detection endpoint
-- `backend/scripts/evaluate_detector.py` — COCO128 mAP50 / mAP50-95 evaluation
-- `backend/scripts/ingest.py` — build the index
-- `backend/scripts/load_index.py` — load the index
-- `backend/data/documents/` — knowledge base
-- `frontend/src/` — React chat UI
-
-## Other AI modules
-
-The repo contains a RAG chatbot, a YOLO11n object detector, and a ResNet-18 flower classifier. Additional FastAPI routers can be mounted next to `/api/chat`, `/api/detect`, and `/api/classify` in `backend/app/main.py` without changing those pipelines.
+### 4. Image Retrieval (CLIP + FAISS)
+<img width="884" height="585" alt="1790841797074_213519633804142373_g2806603422445831712_9e60f97c6a3ec4771faee334f5adc660" src="https://github.com/user-attachments/assets/735a673a-4faa-48f5-b41c-3002862dbbc4" />
